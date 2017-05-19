@@ -55,7 +55,7 @@ class Communication(models.Model):
         return u"%s %s %s" % (self.submitted, self.reference, self.subject)
 
 
-class Message:
+class Messages:
     communication = models.ForeignKey(Communication)
     body = models.BlobField()
 
@@ -63,7 +63,7 @@ class Message:
         return self.title
 
 
-class Attachments:
+class Attachment:
     message = models.ForeignKey(Message)
     attachment = models.FileField(upload_to = self.get_storage_location())
 

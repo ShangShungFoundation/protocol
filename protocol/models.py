@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 #     description = models.CharField(max_length=255)
 #     created_at = models.DateTimeField(auto_now_add=True)
 
-#     def __unicode__(self):
+#     def __str__(self):
 #         return unicode(self.name)
 
 #     class Meta:
@@ -33,20 +33,20 @@ class Category(models.Model):
 
     def make_path(self):
         if self.parent:
-            return u"%s/%s" % (self.parent.path,  self.index)
+            return "%s/%s" % (self.parent.path,  self.index)
         else:
-            return u"/%s" % self.slug
+            return "/%s" % self.slug
 
     def make_human_path(self):
         slug = self.slug if not self.index else "%s_%s" % (self.index, self.slug)
-        return u"%s/%s" % ( self.parent.human_path if self.parent else "",  slug)
+        return "%s/%s" % ( self.parent.human_path if self.parent else "",  slug)
 
     @classmethod
     def storage_categories(cls):
         return cls.objects.filter(allows_storage=True)
 
-    def __unicode__(self):
-        return unicode(self.human_path)
+    def __str__(self):
+        return self.human_path
 
     def save(self, *args, **kwargs):
         self.path = self.make_path()
@@ -55,10 +55,10 @@ class Category(models.Model):
 
     def clean(self):
         if not self.index and self.parent:
-            raise ValidationError(u'All subcategories should have index number')
+            raise ValidationError('All subcategories should have index number')
 
         if self.index and not self.parent:
-            raise ValidationError(u'Top categories should not have index number')
+            raise ValidationError('Top categories should not have index number')
 
     class Meta():
         verbose_name_plural = "Categories"
@@ -70,8 +70,8 @@ class StorageLocation(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
 
-    def __unicode__(self):
-        return unicode(self.name)
+    def __str__(self):
+        return self.name
 
 
 def storage_categories():
@@ -118,25 +118,25 @@ class Communication(models.Model):
         if not self.id:
             # super(Communication, self).save(*args, **kwargs)
             self.index = "%s_%s" % self.create_id()
-            self.protocol = u"%s/%s" % (self.category, self.index)
+            self.protocol = "%s/%s" % (self.category, self.index)
             self.protocal_human = "%s/%s" % (self.category.human_path, self.index)
 
         super(Communication, self).save(*args, **kwargs)
 
     def clean(self):
         if not self.is_digital and not self.storage:
-            raise ValidationError(u'Storage location must be set for physical correspondance')
+            raise ValidationError('Storage location must be set for physical correspondance')
 
         if self.is_digital and self.storage:
-            raise ValidationError(u'Storage location does not apply for digital correspondance only for physical')
+            raise ValidationError('Storage location does not apply for digital correspondance only for physical')
 
         
-    def __unicode__(self):
-        return u"%s %s" % (self.protocol, self.subject)
+    def __str__(self):
+        return "%s %s" % (self.protocol, self.subject)
 
 
 def get_storage_location(instance, filename):
-        return u"protocol%s-%s" % (instance.communication.protocal_human, filename)
+        return "protocol%s-%s" % (instance.communication.protocal_human, filename)
 
 
 class Document(models.Model):
@@ -148,12 +148,12 @@ class Document(models.Model):
     body = models.TextField(blank=True)
     metadata = models.TextField(blank=True, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.communication.protocol
 
     def clean(self):
         if not self.attachment and not self.body:
-            raise ValidationError(u'File atachment must be set or "body" of the message')
+            raise ValidationError('File atachment must be set or "body" of the message')
 
     def save(self, *args, **kwargs):
         # TODO extract and save metadata as JSON

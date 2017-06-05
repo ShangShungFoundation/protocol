@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
-from models import Category, Communication, Document, StorageLocation
+from .models import Category, Communication, Document, StorageLocation
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('human_path', 'path', 'name', 'allows_storage')

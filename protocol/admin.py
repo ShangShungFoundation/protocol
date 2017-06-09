@@ -3,16 +3,17 @@ from django.contrib import admin
 from .models import Category, Communication, Document, StorageLocation
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('human_path', 'path', 'name', 'allows_storage')
-    readonly_fields = ('path', 'human_path', )
+    list_display = ('reference_verbose', 'reference', 'name', 'allows_storage')
+    readonly_fields = ('reference', 'reference_verbose', )
     prepopulated_fields = {'slug': ('name',), }
     fieldsets = (
         (None, {
             'fields': (
                 ('parent', 'allows_storage'),
                 ("index", "name", "slug"),
-                ('path', 'human_path'),
+                ('reference', 'reference_verbose'),
                 "description",
+                
             )
         }),
     )
@@ -26,16 +27,16 @@ class DocumentInline(admin.StackedInline):
 
 class CommunicationAdmin(admin.ModelAdmin):
     list_display = ('protocol', 'submitted',  'subject', 'is_digital')
-    search_fields = ("subject", 'frm', 'to', 'category__path', 'category__human_path', 'category__name')
+    search_fields = ("subject", 'frm', 'to', 'category__reference', 'category__reference_verbose', 'category__name')
     list_filter =  ('category', 'is_digital')
-    readonly_fields = ('index', 'protocol', 'protocal_human', 'submitted')
+    readonly_fields = ('index', 'protocol', 'protocol_verbose', 'submitted', 'metadata')
     inlines = (DocumentInline, )
 
     fieldsets = (
         (None, {
             'fields': (
                 ('category', 'index'),
-                ('protocol', 'protocal_human'),
+                ('protocol', 'protocol_verbose'),
                 ('is_incoming', 'submitted'),
                 ('is_digital', 'storage'),
             )
@@ -44,6 +45,7 @@ class CommunicationAdmin(admin.ModelAdmin):
             'fields': (
                 'subject',
                 ("frm", "to"),
+                'metadata',
             )
         }),
     )

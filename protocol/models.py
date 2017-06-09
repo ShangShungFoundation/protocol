@@ -24,33 +24,33 @@ class Category(models.Model):
     name = models.CharField(max_length=255)
     # in admin: prepopulated_fields = {"slug": ("name",)}
     index = models.PositiveIntegerField(null=True, blank=True)
-    slug = models.SlugField(max_length=255)
-    path = models.CharField(max_length=255, unique=True)
-    human_path = models.CharField("directory", max_length=255, unique=True)
+    slug = models.SlugField("abbreviation", max_length=255)
+    reference = models.CharField(max_length=255, unique=True)
+    reference_verbose = models.CharField("directory", max_length=255, unique=True)
     allows_storage = models.BooleanField()
     description = models.TextField(
         blank=True, null=True)
 
     def make_path(self):
         if self.parent:
-            return "%s/%s" % (self.parent.path,  self.index)
+            return "%s/%s/" % (self.parent.path,  self.index)
         else:
             return "/%s" % self.slug
 
     def make_human_path(self):
         slug = self.slug if not self.index else "%s_%s" % (self.index, self.slug)
-        return "%s/%s" % ( self.parent.human_path if self.parent else "",  slug)
+        return "%s/%s/" % ( self.parent.reference_verbose if self.parent else "",  slug)
 
     @classmethod
     def storage_categories(cls):
         return cls.objects.filter(allows_storage=True)
 
     def __str__(self):
-        return self.human_path
+        return self.reference_verbose
 
     def save(self, *args, **kwargs):
-        self.path = self.make_path()
-        self.human_path = self.make_human_path()
+        self.reference = self.make_path()
+        self.reference_verbose = self.make_human_path()
         super(Category, self).save(*args, **kwargs)
 
     def clean(self):
@@ -62,7 +62,7 @@ class Category(models.Model):
 
     class Meta():
         verbose_name_plural = "Categories"
-        ordering = ("human_path",)
+        ordering = ("reference_verbose",)
         unique_together = (("index", "parent"),)
 
 
@@ -82,15 +82,16 @@ def storage_categories():
 
 class Communication(models.Model):
     protocol = models.CharField(max_length=255, db_index=True, unique=True)
-    protocal_human = models.CharField("protocol verbose", max_length=255, db_index=True, unique=True)
+    protocol_verbose = models.CharField(max_length=255, db_index=True, unique=True)
 
-    index = models.CharField(max_length=10)
+    index = models.CharField(max_length=255, null=True, blank=True)
     category = models.ForeignKey(
         Category, limit_choices_to=storage_categories)
     subject = models.TextField()
     frm = models.CharField("from", max_length=255)
     to = models.CharField(max_length=255)
-    
+    #date = models.DateTimeField()
+
     submitted = models.DateTimeField(auto_now_add=True)
     is_incoming = models.BooleanField()
 
@@ -98,6 +99,7 @@ class Communication(models.Model):
         null=True, blank=True,
         help_text="Physical storage location")
     is_digital = models.BooleanField()
+    metadata = models.TextField(blank=True, null=True)
 
     class Meta:
         get_latest_by = 'submitted'
@@ -118,8 +120,8 @@ class Communication(models.Model):
         if not self.id:
             # super(Communication, self).save(*args, **kwargs)
             self.index = "%s_%s" % self.create_id()
-            self.protocol = "%s/%s" % (self.category, self.index)
-            self.protocal_human = "%s/%s" % (self.category.human_path, self.index)
+            self.protocol = "%s%s" % (self.category.reference, self.index)
+            self.protocol_verbose = "%s%s" % (self.category.reference_verbose, self.index)
 
         super(Communication, self).save(*args, **kwargs)
 
@@ -130,22 +132,26 @@ class Communication(models.Model):
         if self.is_digital and self.storage:
             raise ValidationError('Storage location does not apply for digital correspondance only for physical')
 
+    @property
+    def storage_dir(self):
+        return "protocol%s" % self.protocol_verbose
         
     def __str__(self):
         return "%s %s" % (self.protocol, self.subject)
 
 
 def get_storage_location(instance, filename):
-        return "protocol%s-%s" % (instance.communication.protocal_human, filename)
+        return "%s-%s" % (instance.communication.storage_dir, filename)
 
 
 class Document(models.Model):
     communication = models.ForeignKey(Communication)
+    message_id = models.CharField(max_length=255, blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     attachment = models.FileField(
         upload_to = get_storage_location,
         blank=True, null=True)
-    body = models.TextField(blank=True)
+    body = models.TextField(blank=True, null=True)
     metadata = models.TextField(blank=True, null=True)
     
     def __str__(self):

@@ -10,13 +10,16 @@ Tested with Django1.9 and Python3.5
 Features:
 ---------
 
-* Digital (emails) and physical correspondence
-* Incomig and Outgoing correspondance
-* Single correspondance and threads (interchange of curespondance)
-* Stores all attached documents
+* Supports digital (emails) and physical correspondence
+* Supports incomig and outgoing correspondance
+* Allows single correspondance and threads (curespondance interchange)
+* User friendly integration with gmail (or any other email provider)
+* Stores all attached email documents
 * Automatically asigned unique Protocol reference
 * Protocol establish storage directory corresponding to category hierarchy
 * Supports multiple physical storage locations for distributed institutions
+* Browsing and searching content
+* Restricted access to correspondance and stored documents
 
 Installing
 ----------
@@ -39,5 +42,5 @@ Usage
 
 TODO:
 -----
-
+* Setting checksum to proove document
 * 

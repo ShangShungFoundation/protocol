@@ -2,19 +2,21 @@ Protocol
 ========
 
 Correspondence Protocol System
-INpired by the workshop in Merigar 2017. with Bruno and Peter 
+
+Inspired by the workshop in Merigar 2017. with Bruno and Peter 
+
 Tested with Django1.9 and Python3.5
 
 Features:
 ---------
 
-* [] Digital (email) and physical correspondence
-* [] Incomig and Outgoing correspondance
-* [] Single correspondance and threads (interchange of curespondance)
-* [] Stores all attached documents
-* [] Automatically asigned Protocol reference
-* [] Protocol establish storage directory corresponding to category hierarchy
-* [] Supports multiple physical storage locations for distributed intitutions
+* Digital (emails) and physical correspondence
+* Incomig and Outgoing correspondance
+* Single correspondance and threads (interchange of curespondance)
+* Stores all attached documents
+* Automatically asigned unique Protocol reference
+* Protocol establish storage directory corresponding to category hierarchy
+* Supports multiple physical storage locations for distributed institutions
 
 Installing
 ----------

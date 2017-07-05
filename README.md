@@ -3,7 +3,7 @@ Protocol
 
 Correspondence Protocol System
 
-Inspired by the workshop in Merigar 2017. with Bruno and Peter 
+Inspired by the workshop in Merigar 2017 with Bruna Colarossi and Peter Horsman
 
 Tested with Django1.9 and Python3.5
 

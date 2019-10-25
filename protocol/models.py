@@ -16,10 +16,12 @@ from django.core.exceptions import ValidationError
 
 
 class Category(models.Model):
-    #scheme = models.ForeignKey(Scheme)
+    #scheme = models.ForeignKey(Scheme,
+    #    on_delete=models.DO_NOTHING)
     parent = models.ForeignKey('Category', 
         blank=True, null=True,
-        related_name="subcategories")
+        related_name="subcategories",
+        on_delete=models.DO_NOTHING)
 
     name = models.CharField(max_length=255)
     # in admin: prepopulated_fields = {"slug": ("name",)}
@@ -86,7 +88,8 @@ class Communication(models.Model):
 
     index = models.CharField(max_length=255, null=True, blank=True)
     category = models.ForeignKey(
-        Category, limit_choices_to=storage_categories)
+        Category, limit_choices_to=storage_categories,
+        on_delete=models.DO_NOTHING)
     subject = models.TextField()
     frm = models.CharField("from", max_length=255)
     to = models.CharField(max_length=255)
@@ -97,7 +100,8 @@ class Communication(models.Model):
 
     storage = models.ForeignKey(StorageLocation,
         null=True, blank=True,
-        help_text="Physical storage location")
+        help_text="Physical storage location",
+        on_delete=models.DO_NOTHING)
     is_digital = models.BooleanField()
     metadata = models.TextField(blank=True, null=True)
 
@@ -145,7 +149,9 @@ def get_storage_location(instance, filename):
 
 
 class Document(models.Model):
-    communication = models.ForeignKey(Communication)
+    communication = models.ForeignKey(
+        Communication,
+        on_delete=models.DO_NOTHING)
     message_id = models.CharField(max_length=255, blank=True, null=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     attachment = models.FileField(
